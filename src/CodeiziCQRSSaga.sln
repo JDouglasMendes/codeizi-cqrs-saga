@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30503.244
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Codeizi.CQRS.Saga", "Codeizi.CQRS.Saga\Codeizi.CQRS.Saga.csproj", "{117DF093-CF65-44BE-9A55-D523625E23AD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Codeizi.CQRS.Saga.Test", "Codeizi.CQRS.Saga.Test\Codeizi.CQRS.Saga.Test.csproj", "{A45E2EBD-137B-4056-B4D2-37A1671F833A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A9AB4B65-A6BD-4B10-9438-3FCC23487B9F}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		LeiaMe.txt = LeiaMe.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FunctionalTests", "FunctionalTests", "{67676AF3-A664-4481-BA52-E5A4A3F99F88}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codeizi.CQRS.Saga.FunctionalTest", "Codeizi.CQRS.Saga.FunctionalTest\Codeizi.CQRS.Saga.FunctionalTest.csproj", "{76956A6E-61A6-4A94-9084-523A9C600D19}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{117DF093-CF65-44BE-9A55-D523625E23AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{117DF093-CF65-44BE-9A55-D523625E23AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{117DF093-CF65-44BE-9A55-D523625E23AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{117DF093-CF65-44BE-9A55-D523625E23AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A45E2EBD-137B-4056-B4D2-37A1671F833A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A45E2EBD-137B-4056-B4D2-37A1671F833A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A45E2EBD-137B-4056-B4D2-37A1671F833A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A45E2EBD-137B-4056-B4D2-37A1671F833A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76956A6E-61A6-4A94-9084-523A9C600D19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76956A6E-61A6-4A94-9084-523A9C600D19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76956A6E-61A6-4A94-9084-523A9C600D19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76956A6E-61A6-4A94-9084-523A9C600D19}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{76956A6E-61A6-4A94-9084-523A9C600D19} = {67676AF3-A664-4481-BA52-E5A4A3F99F88}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {167FC88A-928B-493E-8C05-997DD49F9FF6}
+	EndGlobalSection
+EndGlobal
