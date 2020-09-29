@@ -10,10 +10,7 @@ namespace Codeizi.CQRS.Saga.Data
         [Key]
         public Guid Id { get; set; }
 
-        [ForeignKey(nameof(SagaInfo))]
         public Guid SagaId { get; set; }
-
-        public SagaInfo SagaInfo { get; set; }
 
         [Required]
         public DateTime Created { get; set; }

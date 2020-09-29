@@ -1,5 +1,6 @@
 ﻿using Codeizi.CQRS.Saga.BackgroundServices;
 using Codeizi.CQRS.Saga.Context;
+using Codeizi.CQRS.Saga.DAO;
 using Codeizi.CQRS.Saga.Execution;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -10,14 +11,14 @@ namespace Codeizi.CQRS.Saga.Services
 {
     public static class CQRSSagaServiceUtil
     {
- 
+
         public static IServiceCollection AddCQRSSaga(
             this IServiceCollection services,
             IConfiguration configuration,
             Action<DbContextOptionsBuilder> options)
         {
             services.Configure<BackgroundTaskConfigurations>(
-                options => 
+                options =>
                 configuration.GetSection("BackgroundTaskConfigurations").Bind(options));
 
             services.AddDbContext<SagaContext>(options, ServiceLifetime.Transient);
@@ -25,7 +26,12 @@ namespace Codeizi.CQRS.Saga.Services
             services.AddSingleton<ManagerExecution>();
             services.AddHostedService<ExecutionBackgroungTaskServive>();
             services.AddHostedService<SchedulingBackgroundService>();
-            
+            services.AddTransient<ActionLogStateDAO>();
+            services.AddTransient<ActionSchudeleDAO>();
+            services.AddTransient<SagaActionsDAO>();
+            services.AddTransient<SagaInfoDAO>();
+            services.AddTransient<SagaLogDAO>();
+            services.AddTransient<StateDAO>();
             return services;
         }
     }

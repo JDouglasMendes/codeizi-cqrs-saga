@@ -12,9 +12,7 @@ namespace Codeizi.CQRS.Saga.Data
         [Key]
         public Guid Id { get; set; }
 
-        [ForeignKey(nameof(SagaInfo))]
         public Guid SagaInfoId { get; set; }
-        public SagaInfo SagaInfo { get; set; }
 
         public string ExtendedData { get; set; }
 
@@ -30,6 +28,5 @@ namespace Codeizi.CQRS.Saga.Data
                 ExtendedData = value.ToString();
             }
         }
-
     }
 }

@@ -31,5 +31,13 @@ namespace Codeizi.CQRS.Saga.DAO
             await context.SaveChangesAsync();
         }
 
+        internal async Task RemoveBySagaId(Guid id)
+        {
+            using var context = _serviceProvider.GetRequiredService<SagaContext>();
+            var state = await context.States.FirstOrDefaultAsync(x => x.SagaInfoId.Equals(id));
+            if (state == null) return;
+            context.Remove(state);
+            await context.SaveChangesAsync();
+        }
     }
 }

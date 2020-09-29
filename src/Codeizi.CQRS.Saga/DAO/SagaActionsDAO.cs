@@ -14,7 +14,7 @@ namespace Codeizi.CQRS.Saga.DAO
     {
         private readonly IServiceProvider _serviceProvider;
 
-        internal SagaActionsDAO(IServiceProvider serviceProvider)
+        public SagaActionsDAO(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
@@ -99,7 +99,7 @@ namespace Codeizi.CQRS.Saga.DAO
                     x.Status = StatusOperation.WaitCancel;
                 else
                     x.Status = StatusOperation.NotExecuted;
-            });            
+            });
             context.Actions.UpdateRange(actions);
             await context.SaveChangesAsync();
         }

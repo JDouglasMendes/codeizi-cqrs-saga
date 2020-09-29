@@ -1,4 +1,5 @@
-﻿using Codeizi.CQRS.Saga.DAO;
+﻿using Codeizi.CQRS.Saga.BackgroundServices;
+using Codeizi.CQRS.Saga.DAO;
 using Codeizi.CQRS.Saga.Data;
 using Codeizi.CQRS.Saga.Logs;
 using Codeizi.CQRS.Saga.Utils;
@@ -7,6 +8,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Codeizi.CQRS.Saga.Execution
@@ -14,20 +16,22 @@ namespace Codeizi.CQRS.Saga.Execution
     public class ExecutionScheduling
     {
         private readonly SagaActionsDAO ActionDAO;
-        private readonly ActionSchudeleDAO actionSchudeleDAO;        
+        private readonly ActionSchudeleDAO actionSchudeleDAO;
         private readonly ReflectionUtil reflectionUtil;
         private readonly SagaInfoDAO sagaInfoDAO;
         private readonly ActionLogStateDAO actionStateDAO;
         private readonly SagaLogDAO sagaLogDAO;
+        private readonly StateDAO stateDAO;
 
         public ExecutionScheduling(IServiceProvider serviceProvider)
             : this()
-            => (ActionDAO, actionSchudeleDAO, sagaInfoDAO, actionStateDAO, sagaLogDAO) =
+            => (ActionDAO, actionSchudeleDAO, sagaInfoDAO, actionStateDAO, sagaLogDAO, stateDAO) =
                 (serviceProvider.GetRequiredService<SagaActionsDAO>(),
                  serviceProvider.GetRequiredService<ActionSchudeleDAO>(),
                  serviceProvider.GetRequiredService<SagaInfoDAO>(),
                  serviceProvider.GetRequiredService<ActionLogStateDAO>(),
-                 serviceProvider.GetRequiredService<SagaLogDAO>());
+                 serviceProvider.GetRequiredService<SagaLogDAO>(),
+                 serviceProvider.GetRequiredService<StateDAO>());
 
         private ExecutionScheduling()
             => reflectionUtil = new ReflectionUtil();
@@ -80,32 +84,46 @@ namespace Codeizi.CQRS.Saga.Execution
             }
         }
 
+        private static readonly SemaphoreLocker _locker = new SemaphoreLocker();
+
         public async Task ClearFinishedSaga()
         {
-            var actionsFinished = await ActionDAO.GetActionFinshed();
+            await _locker.LockAsync(async () =>
+            {
+                try
+                {
+                    var actionsFinished = await ActionDAO.GetActionFinshed();
 
-            if (actionsFinished == null || !actionsFinished.Any())
-                return;
+                    if (actionsFinished == null || !actionsFinished.Any())
+                        return;
 
-            var saga = await sagaInfoDAO.Get(actionsFinished.First().IdSaga);
-
-            Log log = await GetLog(actionsFinished, saga);
-
-            await sagaLogDAO.Save(log);
-
-            await ActionDAO.Remove(actionsFinished);
+                    foreach(var actions in actionsFinished.GroupBy(x => x.IdSaga))
+                    {
+                        var saga = await sagaInfoDAO.Get(actions.Key);
+                        var log = await GetLog(actions.ToList(), saga);
+                        await sagaLogDAO.Save(log);
+                        await ActionDAO.Remove(actions.ToList());
+                        await sagaInfoDAO.Remove(saga);
+                        await stateDAO.RemoveBySagaId(saga.Id);
+                    }
+                }
+                catch { }
+            });
         }
 
         private async Task<Log> GetLog(
             List<SagaAction> actionsFinished,
             SagaInfo saga)
         {
-            var states = await actionStateDAO.GetLogBySagaId(actionsFinished.First().IdSaga);
+            var states = await actionStateDAO.GetLogBySagaId(saga.Id);
 
             var actionsList = new List<ActionLog>();
 
             actionsFinished.ForEach(x =>
             {
+                var initialState = states.FirstOrDefault(y => y.ActionId.Equals(x.Id)).InitialState;
+                var finishedState = states.FirstOrDefault(y => y.ActionId.Equals(x.Id)).FinshedState;
+                var type = reflectionUtil.GetTypeByName(x.TypeState);
                 var action = new ActionLog
                 {
                     Created = x.Created,
@@ -114,8 +132,8 @@ namespace Codeizi.CQRS.Saga.Execution
                     Scheduled = x.Scheduled,
                     Type = x.Type,
                     Status = x.Status,
-                    InitialState = JsonConvert.DeserializeObject(states.FirstOrDefault(y => y.ActionId.Equals(x.Id)).InitialState, reflectionUtil.GetTypeByName(x.TypeState)),
-                    FinishedState = JsonConvert.DeserializeObject(states.FirstOrDefault(y => y.ActionId.Equals(x.Id)).FinshedState, reflectionUtil.GetTypeByName(x.TypeState))
+                    InitialState = JsonConvert.DeserializeObject(initialState, type),
+                    FinishedState = JsonConvert.DeserializeObject(finishedState, type)
                 };
                 actionsList.Add(action);
             });

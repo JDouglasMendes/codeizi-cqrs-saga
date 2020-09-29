@@ -1,5 +1,4 @@
-﻿using Codeizi.CQRS.Saga.Data;
-using Codeizi.CQRS.Saga.Execution;
+﻿using Codeizi.CQRS.Saga.Execution;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System.Threading;
@@ -23,12 +22,13 @@ namespace Codeizi.CQRS.Saga.BackgroundServices
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await _executionScheduling.ClearFinishedSaga();
                 await _executionScheduling.ScheduleWait();
                 await _executionScheduling.SchuduleFail();
-               
-                await Task.Delay(_settings.SchudeleCheckUpdateTime > 0 ? _settings.SchudeleCheckUpdateTime : 10,
+
+                await Task.Delay(_settings.SchudeleCheckUpdateTime > 0 ? _settings.SchudeleCheckUpdateTime : 100,
                                 stoppingToken);
+
+                await _executionScheduling.ClearFinishedSaga();
             }
             await Task.CompletedTask;
         }

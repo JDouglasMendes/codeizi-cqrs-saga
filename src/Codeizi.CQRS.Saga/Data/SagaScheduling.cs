@@ -10,20 +10,22 @@ namespace Codeizi.CQRS.Saga.Data
         [Key]
         public Guid Id { get; set; }
 
-        [ForeignKey(nameof(SagaInfo))]
         public Guid SagaId { get; set; }
-        public SagaInfo SagaInfo { get; set; }
 
-        [ForeignKey(nameof(SagaAction))]
         public Guid SagaActionId { get; set; }
+
+        [ForeignKey(nameof(SagaActionId))]
         public SagaAction SagaAction { get; set; }
 
         [Required]
         public DateTime DateCreate { get; set; }
+
         [Required]
         public string Type { get; set; }
+
         [Required]
         public string TypeState { get; set; }
+
         [Required]
         public bool Cancel { get; set; }
     }

@@ -10,9 +10,7 @@ namespace Codeizi.CQRS.Saga.Data
         [Key]
         public Guid Id { get; set; }
 
-        [ForeignKey(nameof(SagaInfo))]
         public Guid IdSaga { get; set; }
-        public SagaInfo SagaInfo { get; set; }
 
         [Required]
         public byte Position { get; set; }
